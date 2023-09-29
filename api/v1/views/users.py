@@ -13,9 +13,9 @@ from models.user import User
 def GET_all_User():
     """ Returns te JSON list of all `User` instances in storage
     """
-    user_lt = []
+    user_list = []
     for user in storage.all(User).values():
-        user_lt.append(user.to_dict())
+        user_list.append(user.to_dict())
 
     return jsonify(user_lt)
 
@@ -56,14 +56,14 @@ def POST_User():
         Empty dictionary and response status 200, or 404 response
     on error
     """
-    rec_dict = request.get_json()
-    if not rec_dict:
+    req_dict = request.get_json()
+    if not req_dict:
         return (jsonify({'error': 'Not a JSON'}), 400)
-    elif 'email' not in rec_dict:
+    elif 'email' not in req_dict:
         return (jsonify({'error': 'Missing email'}), 400)
-    elif 'password' not in rec_dict:
+    elif 'password' not in req_dict:
         return (jsonify({'error': 'Missing password'}), 400)
-    new_User = User(**rec_dict)
+    new_User = User(**req_dict)
     new_User.save()
 
     return (jsonify(new_User.to_dict()), 201)
@@ -83,12 +83,12 @@ def PUT_User(user_id):
     on error
     """
     user = storage.get(User, user_id)
-    rec_dict = request.get_json()
+    req_dict = request.get_json()
 
     if user:
-        if not rec_dict:
+        if not req_dict:
             return (jsonify({'error': 'Not a JSON'}), 400)
-        for key, value in rec_dict.items():
+        for key, value in req_dict.items():
             if key not in ['id', 'created_at', 'updated_at', 'email']:
                 setattr(user, key, value)
         storage.save()
