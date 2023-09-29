@@ -89,25 +89,17 @@ class TestFileStorage(unittest.TestCase):
 
     @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
                      "not testing file storage")
-    def test_get_method(self):
+    def test_get(self):
         """Test the get method of DBStorage and FileStorage."""
-        storage = FileStorage()
-        self.assertIs(storage.get("User", "AkinOsije"), None)
-        self.assertIs(storage.get("AkinOsije", "AkinOsije"), None)
-        new_user = User()
-        new_user.save()
-        self.assertIs(storage.get("User", new_user.id), new_user)
+        state = State(name="PR")
+        state.save()
+        self.assertIs(models.storage.get(State, state.id), state)
 
     @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
                      "not testing file storage")
-    def test_count_method(self):
+    def test_count(self):
         """Test the count method of DBStorage and FileStorage."""
-        storage = FileStorage()
-        initial_length = len(storage.all())
-        self.assertEqual(storage.count(), initial_length)
-        state_len = len(storage.all("State"))
-        self.assertEqual(storage.count("State"), state_len)
-        new_state = State()
-        new_state.save()
-        self.assertEqual(storage.count(), initial_length + 1)
-        self.assertEqual(storage.count("State"), state_len + 1)
+        num_states = models.storage.count(State)
+        state = State(name="statey")
+        state.save()
+        self.assertEqual(models.storage.count(State), num_states + 1)

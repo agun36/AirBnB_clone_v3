@@ -116,24 +116,52 @@ class TestFileStorage(unittest.TestCase):
 
      @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
                      "not testing file storage")
-     def test_get_method(self):
+     def test_get(self):
          """Test that the get method properly retrievs objects"""
-         storage = FileStorage()
-         self.assertIs(storage.get("User", "blah"), None)
-         self.assertIs(storage.get("blah", "blah"), None)
-         new_user = User()
-         new_user.save()
-         self.assertIs(storage.get("User", new_user.id), new_user)
+         save = FileStorage._FileStorage__objects
+        FileStorage._FileStorage__objects = {}
+
+        storage = FileStorage()
+        state = State()
+        state.save()
+        # passing non-BaseModel derived object as `cls` - None
+        for test_type in (str, int, float):
+            self.assertIsNone(storage.get(test_type, state.id))
+        # passing BaseModel derived object as `cls`, invalid id - None
+        self.assertIsNone(storage.get(State, 'invalid_id'))
+        # passing BaseModel derived object as `cls`, valid id - obj with id
+        self.assertIs(storage.get(State, state.id), state)
+
+        FileStorage._FileStorage__objects = save
 
     @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
                      "not testing file storage")
-    def test_count_method(self):
+    def test_count(self):
+        """ Test for the FS count method
+        """
+        save = FileStorage._FileStorage__objects
+        FileStorage._FileStorage__objects = {}
+
         storage = FileStorage()
-        initial_length = len(storage.all())
-        self.assertEqual(storage.count(), initial_length)
-        state_len = len(storage.all("State"))
-        self.assertEqual(storage.count("State"), state_len)
-        new_state = State()
-        new_state.save()
-        self.assertEqual(storage.count(), initial_length + 1)
-        self.assertEqual(storage.count("State"), state_len + 1)
+        for i in range(3):
+            state = State()
+            storage.new(state)
+        storage.save()
+        # passing non-BaseModel derived object as `cls` - return 0
+        for test_type in (str, int, float):
+            self.assertEqual(storage.count(test_type), 0)
+        # passing BaseModel derived object as `cls`
+        self.assertEqual(storage.count(State), 3)
+
+        for i in range(2):
+            city = City()
+            storage.new(city)
+        storage.save()
+        # passing None as `cls` - count all types in storage
+        self.assertEqual(storage.count(None),
+                         len(storage.all(State)) + len(storage.all(City)))
+        # passing no `cls` - count all types in storage
+        self.assertEqual(storage.count(),
+                         len(storage.all(State)) + len(storage.all(City)))
+
+        FileStorage._FileStorage__objects = save
