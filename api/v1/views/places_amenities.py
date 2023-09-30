@@ -77,7 +77,7 @@ def POST_Place_amenities(place_id, amenity_id):
 
     if place and amenity:
         if amenity in place.amenities:
-            return (jsonify(amenity.to_dict()))
+            return (jsonify(amenity.to_dict()), 200)
         else:
             place.amenities.append(amenity)
         storage.save()
