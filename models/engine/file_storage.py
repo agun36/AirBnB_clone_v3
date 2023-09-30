@@ -51,11 +51,13 @@ class FileStorage:
     def reload(self):
         """deserializes the JSON file to __objects"""
         try:
-            with open(self.__file_path, 'r') as f:
-                jo = json.load(f)
-            for key in jo:
-                self.__objects[key] = classes[jo[key]["__class__"]](**jo[key])
-        except:
+            with open(FileStorage.__file_path, encoding="UTF8") as fd:
+                FileStorage.__objects = json.load(fd)
+            for key, val in FileStorage.__objects.items():
+                class_name = val["__class__"]
+                class_name = models.classes[class_name]
+                FileStorage.__objects[key] = class_name(**val)
+        except FileNotFoundError:
             pass
 
     def delete(self, obj=None):
@@ -75,5 +77,5 @@ class FileStorage:
             return self.__objects.get(cls.__name__ + '.' + id, None)
 
     def count(self, cls=None):
-         """Count the number of objects in storage."""
-         return len(self.all(cls))
+        """Count the number of objects in storage."""
+        return len(self.all(cls))
