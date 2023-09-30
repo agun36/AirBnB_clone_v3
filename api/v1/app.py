@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """make api"""
+import os
 from models import storage
-from os import getenv
 from api.v1.views import app_views
 from flask import Flask, make_response, jsonify
 from flask_cors import CORS
@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 app.register_blueprint(app_views)
 
-cors = CORS(app, resources={"/*": {"origins": "0.0.0.0"}})
+cors = CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
 
 @app.teardown_appcontext
@@ -32,6 +32,5 @@ def page_not_found(e):
 
 
 if __name__ == "__main__":
-    host = getenv('HBNB_API_HOST', '0.0.0.0')
-    port = int(getenv('HBNB_API_PORT', '5000'))
-    app.run(host, port, threaded=True)
+    app.run(host=os.getenv('HBNB_API_HOST', '0.0.0.0'),
+            port=int(os.getenv('HBNB_API_PORT', '5000')))
