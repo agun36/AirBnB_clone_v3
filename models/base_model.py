@@ -2,9 +2,9 @@
 """
 Contains class BaseModel
 """
-
-from datetime import datetime
 import models
+from models import storage
+from datetime import datetime
 from os import getenv
 import sqlalchemy
 from sqlalchemy import Column, String, DateTime
@@ -21,10 +21,10 @@ else:
 
 class BaseModel:
     """The BaseModel class from which future classes will be derived"""
-    if models.storage_t == "db":
-        id = Column(String(60), primary_key=True)
-        created_at = Column(DateTime, default=datetime.utcnow)
-        updated_at = Column(DateTime, default=datetime.utcnow)
+    if getenv("HBNB_TYPE_STORAGE") == "db":
+        id = Column(String(60), nullable=False,  primary_key=True)
+        created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+        updated_at = Column(DateTime, nullable=False,  default=datetime.utcnow)
 
     def __init__(self, *args, **kwargs):
         """Initialization of the base model"""
