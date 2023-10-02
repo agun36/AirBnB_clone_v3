@@ -92,6 +92,6 @@ def PUT_User(user_id):
             if key not in ['id', 'created_at', 'updated_at', 'email']:
                 setattr(user, key, value)
         storage.save()
-        return (jsonify(user.to_dict()))
+        return (jsonify(user.to_dict()), 200)
     else:
         abort(404)
