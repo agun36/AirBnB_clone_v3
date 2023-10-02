@@ -3,7 +3,7 @@
 `app_views` Blueprint.
 """
 from api.v1.views import app_views
-from flask import Flask, jsonify, abort, request
+from flask import Flask, jsonify, abort, request, make_response
 from models import storage
 from models.place import Place
 from models.review import Review
@@ -28,7 +28,7 @@ def GET_all_Review(place_id):
         review_list = []
         for review in place.reviews:
             review_list.append(review.to_dict())
-response = make_response(jsonify(review_list), 200)
+        response = make_response(jsonify(review_list), 200)
         return response
     else:
         abort(404)
