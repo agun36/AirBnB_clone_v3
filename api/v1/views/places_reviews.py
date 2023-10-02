@@ -28,7 +28,8 @@ def GET_all_Review(place_id):
         review_list = []
         for review in place.reviews:
             review_list.append(review.to_dict())
-        return jsonify(review_list)
+response = make_response(jsonify(review_list), 200)
+        return response
     else:
         abort(404)
 
@@ -48,10 +49,9 @@ def GET_Review(review_id):
     review = storage.get(Review, review_id)
 
     if review:
-        return jsonify(review.to_dict())
+        return (jsonify(review.to_dict()), 200)
     else:
         abort(404)
-
 
 @app_views.route("/reviews/<review_id>", methods=['DELETE'],
                  strict_slashes=False)
@@ -135,6 +135,6 @@ def PUT_Review(review_id):
                            'user_id', 'place_id']:
                 setattr(review, key, value)
         storage.save()
-        return (jsonify(review.to_dict()))
+        return (jsonify(review.to_dict()), 200)
     else:
         abort(404)
