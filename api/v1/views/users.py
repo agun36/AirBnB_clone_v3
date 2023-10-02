@@ -27,7 +27,7 @@ def GET_User(user_id):
     user = storage.get(User, user_id)
 
     if user:
-        return jsonify(user.to_dict())
+        return jsonify(user.to_dict(), 200)
     else:
         abort(404)
 
