@@ -3,7 +3,7 @@
 `app_views` Blueprint.
 """
 from api.v1.views import app_views
-from flask import Flask, jsonify, abort, request
+from flask import Flask, jsonify, abort, request, make_response
 from models import storage
 from models.amenity import Amenity
 
@@ -19,8 +19,9 @@ def GET_all_Amenity():
     amenity_list = []
     for amenity in storage.all(Amenity).values():
         amenity_list.append(amenity.to_dict())
+    response = make_response(jsonify(user_list), 200)
 
-    return jsonify(amenity_list)
+    return response
 
 
 @app_views.route("/amenities/<amenity_id>", methods=['GET'],
@@ -38,7 +39,7 @@ def GET_Amenity(amenity_id):
     amenity = storage.get(Amenity, amenity_id)
 
     if amenity:
-        return jsonify(amenity.to_dict())
+        return jsonify(amenity.to_dict(), 200)
     else:
         abort(404)
 
@@ -107,6 +108,6 @@ def PUT_Amenity(amenity_id):
             if key not in ['id', 'created_at', 'updated_at']:
                 setattr(amenity, key, value)
         storage.save()
-        return (jsonify(amenity.to_dict()))
+        return (jsonify(amenity.to_dict()), 200)
     else:
         abort(404)
