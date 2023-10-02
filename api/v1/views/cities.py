@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """ module for city object view"""
 from api.v1.views import app_views
-from flask import Flask, jsonify, abort, request
+from flask import Flask, jsonify, abort, request, make_response
 from models import storage
 from models.city import City
 from models.state import State
@@ -23,7 +23,8 @@ def get_cities(state_id):
         cities_list = []
         for city in state.cities:
             cities_list.append(city.to_dict())
-        return jsonify(cities_list)
+        response = make_response(jsonify(cities_list), 200)
+        return response
     else:
         abort(404)
 
@@ -41,7 +42,7 @@ def get_city(city_id):
     city = storage.get(City, city_id)
 
     if city:
-        return jsonify(city.to_dict())
+        return jsonify(city.to_dict(), 200)
     else:
         abort(404)
 
@@ -112,6 +113,6 @@ def put_city(city_id):
             if k not in ['id', 'state_id', 'created_at', 'updated_at']:
                 setattr(city, k, v)
         storage.save()
-        return jsonify(city.to_dict())
+        return jsonify(city.to_dict(), 200)
     else:
         abort(404)
