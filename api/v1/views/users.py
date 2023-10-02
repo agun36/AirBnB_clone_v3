@@ -16,6 +16,7 @@ def GET_all_User():
     user_list = []
     for user in storage.all(User).values():
         user_list.append(user.to_dict())
+        response = make_response(jsonify(user_list), 200)
 
     return jsonify(user_lt)
 
