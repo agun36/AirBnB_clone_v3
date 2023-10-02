@@ -18,7 +18,7 @@ def GET_all_User():
         user_list.append(user.to_dict())
         response = make_response(jsonify(user_list), 200)
 
-    return jsonify(user_lt)
+    return response
 
 
 @app_views.route("/users/<user_id>", methods=['GET'],
